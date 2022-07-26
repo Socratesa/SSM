@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="edu.hitwh.mybatis.mappers.StudentMapper">
+<!--    Student getCertainStudent(Student student);-->
+    <select id="getCertainStudent" resultType="Student">
+        select * from student where student_name = '${studentName}' and major = (
+            select id from major where major_name = '${major.majorName}'
+            )
+    </select>
+
+<!--    List<Student> getLikeStudents(@Param("like") String like);-->
+    <resultMap id="likeStudents" type="Student">
+        <id property="id" column="id"></id>
+        <result property="studentName" column="student_name"></result>
+        <result property="age" column="age"></result>
+        <result property="email" column="email"></result>
+    </resultMap>
+    <select id="getLikeStudents" resultMap="likeStudents">
+--         第一种 使用${} 最简单方式 推荐
+        select * from student where student_name like '%${like}%'
+    </select>
+<!--    Major getStudentAllMessage(@Param("studentName")String studentName);-->
+    <resultMap id="getFullStudent" type="Student">
+<!--        最基本的在此省略 此外，也配置了数据库标准格式与java标准格式的转化 即属性除major外，均可完成映射-->
+        <id property="id" column="id"></id>
+        <result property="studentName" column="student_name"></result>
+        <result property="age" column="age"></result>
+        <result property="email" column="email"></result>
+        <association property="major" javaType="Major">
+            <id property="id" column="id"></id>
+            <result property="majorName" column="major_name"></result>
+            <result property="majorPrincipal" column="major_principal"></result>
+            <result property="description" column="description"></result>
+        </association>
+    </resultMap>
+    <select id="getStudentAllMessage" resultMap="getFullStudent">
+        select student.*,major.* from student natural join major where student.student_name = #{studentName}
+    </select>
+
+<!--    List<Student> findStudentsByMajor(@Param("majorName")String majorName);-->
+    <select id="findStudentsByMajor" resultType="Student">
+        select * from student where major = (select id from major where major_name = #{majorName})
+    </select>
+
+<!--    Integer getId(@Param("studentName")String studentName);-->
+    <select id="getId" resultType="integer">
+        select id from student where student_name = #{studentName}
+    </select>
+
+<!--    Student getStudentByMap(Map<String,Object> paramMap);-->
+    <select id="getStudentByMap" resultType="Student">
+        select * from student where student_name = #{studentName} and age = #{age}
+    </select>
+
+<!--    Student getStudentByTwoPojoParams(@Param("student") Student student,@Param("major") Major major);-->
+    <select id="getStudentByTwoPojoParams" resultType="Student">
+        select * from student where student_name = #{student.studentName} and major = #{major.id}
+    </select>
+</mapper>

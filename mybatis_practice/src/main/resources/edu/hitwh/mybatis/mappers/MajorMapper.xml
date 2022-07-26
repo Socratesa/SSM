@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="edu.hitwh.mybatis.mappers.MajorMapper">
+<!--    void addMajor(Major major);-->
+    <insert id="addMajor">
+        insert into major values(null,#{majorName},#{majorPrincipal},#{description});
+    </insert>
+
+<!--    Major getCertainMajor(@Param("majorName") String majorName);-->
+    <resultMap id="MajorMap" type="Major">
+        <id property="id" column="id"></id>
+        <result property="majorName" column="major_name"></result>
+        <result property="majorPrincipal" column="major_principal"></result>
+        <result property="description" column="description"></result>
+    </resultMap>
+    <select id="getCertainMajor" resultMap="MajorMap">
+        select * from major where major_name = #{majorName}
+    </select>
+
+<!--    void deleteMajor(@Param("majorName") String majorName);-->
+    <delete id="deleteMajor">
+        delete from major where major_name = #{majorName}
+    </delete>
+
+<!--    void updateMajor(@Param("majorName") String majorName);-->
+    <update id="updateMajor">
+        update major set major_principal = "小花" where major_name = #{majorName}
+    </update>
+<!--    void addMajorMore(@Param("majors") List<Major> majors);-->
+    <insert id="addMajorMore">
+        insert into major values
+        <foreach collection="majors" item="major" separator=",">
+            (null,#{major.majorName},#{major.majorPrincipal},#{major.description})
+        </foreach>
+    </insert>
+
+<!--    List<Major> getAllMajor();-->
+    <select id="getAllMajor" resultMap="MajorMap">
+        select * from major
+    </select>
+</mapper>
